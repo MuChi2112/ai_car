@@ -12,7 +12,7 @@ class AbstractCar:
         self.angle = 0
         self.x, self.y = start_pos
         self.acceleration = 0.1
-
+        self.start_pos = start_pos
     def rotate(self, left=False, right=False):
         if left:
             self.angle += self.rotation_vel
@@ -45,6 +45,6 @@ class AbstractCar:
         return poi
 
     def reset(self):
-        self.x, self.y = self.START_POS
+        self.x, self.y = self.start_pos
         self.angle = 0
         self.vel = 0
