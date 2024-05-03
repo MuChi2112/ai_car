@@ -1,23 +1,35 @@
 
 
 class CheckPoint():
-    def __init__(self, CHECK_POINT):
-        IMG = CHECK_POINT
+    def __init__(self, current_check_point, check_point_mask):
+        IMG = current_check_point
+        self.x = self.calculate_mask_position(check_point_mask)
+        self.y = self.calculate_mask_position(check_point_mask)
         self.counter = 0
         self.touch_once = False
+
+    def calculate_mask_position(self, mask):
+        min_x, min_y, max_x, max_y = mask.get_bounding_rects()[0]
+        x = (min_x+max_x)/2
+        y = (min_y+max_y)/2
+        print(f"x:{x}, y: {y}")
+        return x, y
 
     def check_point_check(self, player_car, check_point_mask):
         collision_point = player_car.collide(check_point_mask, 0, 0)
 
         if collision_point is None and self.touch_once is False:
-            return
+            return False
         
         if collision_point is not None and self.touch_once is False:
             self.touch_once = True
-            return
+            return False
         
         if collision_point is  None and self.touch_once is True:
             self.counter += 1
             print(f"check point {self.counter}")
             self.touch_once = False
-            return
+            return True
+
+    def draw(self, win, current_check_point):
+        win.blit([current_check_point], (0, 0))
