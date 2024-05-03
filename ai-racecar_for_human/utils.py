@@ -18,7 +18,7 @@ def blit_text_center(win, font, text):
     win.blit(render, (win.get_width()/2 - render.get_width() /
                       2, win.get_height()/2 - render.get_height()/2))
 
-def draw(win, images, player_car, game_info, x_offset, y_offset, main_font, height):
+def draw(win, images, player_car, game_info, x_offset, y_offset, main_font, height, mask):
     win.fill((0, 0, 0))
     for img, pos in images:
         win.blit(img, (pos[0] + x_offset, pos[1] + y_offset))
@@ -33,23 +33,27 @@ def draw(win, images, player_car, game_info, x_offset, y_offset, main_font, heig
     win.blit(vel_text, (10, height - vel_text.get_height() - 10))
     player_car.draw(win, x_offset, y_offset)
     
-    
+    player_car.circle_hit_check(x_offset, y_offset, win, mask)
 
     pygame.display.update()
 
 def handle_collision(player_car, game_info, track_border_mask, finish_mask, finish_position):
     collision_point = player_car.collide(track_border_mask, 0, 0)
-    if collision_point is not None:
-        
-        return (-100), True
+    # if collision_point is not None:
+    #     # player_car.bounce()
+    #     game_info.reset()
+    #     player_car.reset()
 
-    player_finish_poi_collide = player_car.collide(finish_mask, *finish_position)
-    if player_finish_poi_collide is not None:
-        if player_finish_poi_collide[1] == 0:
-            return (10000), True
-        
-    return 1, False
-
+    # player_finish_poi_collide = player_car.collide(finish_mask, *finish_position)
+    # if player_finish_poi_collide is not None:
+    #     if player_finish_poi_collide[1] == 0:
+    #         # player_car.bounce()
+    #         game_info.reset()
+    #         player_car.reset()
+    #     else:
+    #         game_info.next_level()
+    #         player_car.reset()
+    #         print(f"Advanced to next level: {game_info.level}")
 
 def polar_to_cartesian(theta_degrees, r):
     # 將角度從度轉換為弧度

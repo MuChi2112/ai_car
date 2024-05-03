@@ -30,16 +30,13 @@ class PlayerCar(AbstractCar):
         y_offset = height / 2 - player_car.y
         return x_offset, y_offset
     
-    def circle_hit_check(self, x_offset, y_offset, mask):
+    def circle_hit_check(self, x_offset, y_offset, screen, mask):
         collision_point_list = []
 
         for i in self.pair_list:
             cir_x_rel , cir_y_rel = polar_to_cartesian(i[0] - self.angle -90 , i[1])
             cir_x_true, cir_y_true = cir_x_rel + x_offset + self.x + 19 * 0.4, cir_y_rel + y_offset + self.y + 38 * 0.4
-            # pygame.draw.circle(screen, pygame.Color(255, 0, 0), (cir_x_true, cir_y_true), 5)
+            pygame.draw.circle(screen, pygame.Color(255, 0, 0), (cir_x_true, cir_y_true), 5)
             
             collision_point = mask.get_at((cir_x_true - x_offset, cir_y_true - y_offset))
             collision_point_list.append(collision_point)
-
-            
-        return collision_point_list

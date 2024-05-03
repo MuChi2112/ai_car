@@ -2,83 +2,94 @@ import pygame
 from utils import scale_image, blit_text_center, draw, handle_collision
 from playerCar import PlayerCar
 from gameInfo import GameInfo
+from checkPoint import CheckPoint
 
-def move_player(player_car):
-    keys = pygame.key.get_pressed()
-    moved = False
 
-    if keys[pygame.K_a]:
-        player_car.rotate(left=True)
-    if keys[pygame.K_d]:
-        player_car.rotate(right=True)
-    if keys[pygame.K_w]:
-        moved = True
-        player_car.move_forward()
-    if keys[pygame.K_s]:
-        moved = True
-        player_car.move_backward()
 
-    if not moved:
-        player_car.reduce_speed()
 
-if __name__ == "__main__":
+class CarGame :
+
+    def __init__(self):
+        pygame.font.init()
+        self.TRACK = scale_image(pygame.image.load("imgs/track.png"), 1)
+        self.TRACK_BORDER = scale_image(pygame.image.load("imgs/border.png"), 1)
+        self.TRACK_BORDER_MASK = pygame.mask.from_surface(self.TRACK_BORDER)
+        self.FINISH = pygame.transform.rotate(scale_image(pygame.image.load("imgs/finish.png"), 3), 155)
+        self.CHECK_POINT = scale_image(pygame.image.load("imgs/checkPoint.png"), 1)
+        self.CHECK_POINT_MASK = pygame.mask.from_surface(self.CHECK_POINT)
+
+        self.FINISH_MASK = pygame.mask.from_surface(self.FINISH)
+        self.FINISH_POSITION = (14600, 11345)
+        self.START_POS = (14561, 11548)
+
+        self.RED_CAR = scale_image(pygame.image.load("imgs/car.png"), 0.4)
+        self.CIRCLE = scale_image(pygame.image.load("imgs/circle.png"), 200)
+
+        # self.WIDTH, self.HEIGHT = self.TRACK.get_width(), self.TRACK.get_height()
+        self.WIDTH, self.HEIGHT = 1000, 925
+        print(f"{self.WIDTH * 20} ,  {self.HEIGHT * 20}") 
+        self.WIN = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        pygame.display.set_caption("Racing Game!")
+
+        self.MAIN_FONT = pygame.font.SysFont("comicsans", 44)
+        self.FPS = 60
+
+        self.run = True
+        self.clock = pygame.time.Clock()
+        self.images = [(self.TRACK, (0, 0)), (self.FINISH, self.FINISH_POSITION), (self.TRACK_BORDER, (0, 0), ), (self.CHECK_POINT, (0, 0))]
+
+        # self.check_points = {}
+
+        # for i in range(4):
+        #     self.check_points[i] = CheckPoint(self.CHECK_POINT_MASK)
+        #     self.images.append(f"(self.TRACK_BORDER_{i}, (0, 0))")
+
+
+        self.player_car = PlayerCar(100, 4, self.RED_CAR, self.START_POS)
+        
+        self.game_info = GameInfo()
+        self.check_point = CheckPoint(self.CHECK_POINT_MASK)
+
+        self.collision_point_list = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        
+
+
+    def move_player(self, player_car, FINAL_MOVE):
+        keys = FINAL_MOVE
+        moved = False
+
+        if keys == [1, 0, 0, 0]:
+            player_car.rotate(left=True)
+        if keys == [0, 1, 0, 0]:
+            player_car.rotate(right=True)
+        if keys == [0, 0, 1, 0]:
+            moved = True
+            player_car.move_forward()
+        if keys == [0, 0, 0, 1]:
+            moved = True
+            player_car.move_backward()
+
+        if not moved:
+            player_car.reduce_speed()
+
+    def play_game(self, FINAL_MOVE):
+        self.clock.tick(self.FPS)
+        x_offset, y_offset = PlayerCar.calculate_offset(self.player_car, self.WIDTH, self.HEIGHT)
+        # print(f"x_offset: {x_offset},  y_offset: {y_offset}")
+        
+        self.collision_point_list = self.player_car.circle_hit_check(x_offset, y_offset, self.TRACK_BORDER_MASK)
+        # print(collision_point_list)
+        
+        draw(self.WIN, self.images, self.player_car, self.game_info, x_offset, y_offset, self.MAIN_FONT, self.HEIGHT)
+
+        self.move_player(self.player_car, FINAL_MOVE)
+        score, done = handle_collision(self.player_car, self.game_info, self.TRACK_BORDER_MASK, self.FINISH_MASK, self.FINISH_POSITION)
+        self.check_point.check_point_check(self.player_car, self.CHECK_POINT_MASK)
+
+        reward = score
+
+        return reward, done, score
     
-    
-
-    pygame.font.init()
-
-    TRACK = scale_image(pygame.image.load("imgs/track.png"), 1)
-    TRACK_BORDER = scale_image(pygame.image.load("imgs/border.png"), 1)
-    TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
-    FINISH = pygame.transform.rotate(scale_image(pygame.image.load("imgs/finish.png"), 3), 155)
-    FINISH_MASK = pygame.mask.from_surface(FINISH)
-    FINISH_POSITION = (14600, 11345)
-    START_POS = (14561 , 11548 )
-
-    RED_CAR = scale_image(pygame.image.load("imgs/car.png"), 0.4)
-
-    # WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
-    WIDTH, HEIGHT = 1000, 925
-    print(f"{WIDTH * 20} ,  {HEIGHT * 20}") 
-    WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Racing Game!")
-
-    MAIN_FONT = pygame.font.SysFont("comicsans", 44)
-    FPS = 60
-
-    run = True
-    clock = pygame.time.Clock()
-    images = [(TRACK, (0, 0)), (FINISH, FINISH_POSITION), (TRACK_BORDER, (0, 0))]
-    player_car = PlayerCar(20, 4, RED_CAR, START_POS)
-    game_info = GameInfo()
-
-    while run:
-        clock.tick(FPS)
-        x_offset, y_offset = PlayerCar.calculate_offset(player_car, WIDTH, HEIGHT)
-
-        draw(WIN, images, player_car, game_info, x_offset, y_offset, MAIN_FONT, HEIGHT)
-
-        if not game_info.started:
-            blit_text_center(WIN, MAIN_FONT, f"Press any key to start level {game_info.level}!")
-            pygame.display.update()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run = False
-                    pygame.quit()
-                    break
-                if event.type == pygame.KEYDOWN:
-                    game_info.start_level()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                break
-
-        move_player(player_car)
-        handle_collision(player_car, game_info, TRACK_BORDER_MASK, FINISH_MASK, FINISH_POSITION)
-
-        if game_info.game_finished():
-            blit_text_center(WIN, MAIN_FONT, "You won the game!")
-            pygame.time.wait(5000)
-            game_info.reset()
-            player_car.reset()
+    def reset(self):
+        self.game_info.reset()
+        self.player_car.reset()

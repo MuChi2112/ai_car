@@ -9,25 +9,28 @@ class AbstractCar:
         self.max_vel = max_vel
         self.vel = 0
         self.rotation_vel = rotation_vel
-        self.angle = 0
+        self.angle = 145
         self.x, self.y = start_pos
         self.acceleration = 0.1
         self.start_pos = start_pos
     def rotate(self, left=False, right=False):
-        if left:
-            self.angle += self.rotation_vel
-        elif right:
-            self.angle -= self.rotation_vel
+        if self.vel != 0:
+            if left:
+                self.angle += self.rotation_vel
+            elif right:
+                self.angle -= self.rotation_vel
+        
+        return
 
     def draw(self, win, x_offset, y_offset):
         blit_rotate_center(win, self.img, (self.x + x_offset, self.y + y_offset), self.angle)
 
     def move_forward(self):
-        self.vel = min(self.vel + self.acceleration, self.max_vel)
+        self.vel = min(self.vel + 2*self.acceleration, self.max_vel)
         self.move()
 
     def move_backward(self):
-        self.vel = max(self.vel - self.acceleration, -self.max_vel/2)
+        self.vel = max(self.vel - 3*self.acceleration, 0)
         self.move()
 
     def move(self):
@@ -46,5 +49,5 @@ class AbstractCar:
 
     def reset(self):
         self.x, self.y = self.start_pos
-        self.angle = 0
+        self.angle = 145
         self.vel = 0
