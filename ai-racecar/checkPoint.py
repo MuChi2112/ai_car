@@ -1,10 +1,9 @@
-
+import math
 
 class CheckPoint():
     def __init__(self, current_check_point, check_point_mask):
         IMG = current_check_point
-        self.x = self.calculate_mask_position(check_point_mask)
-        self.y = self.calculate_mask_position(check_point_mask)
+        self.x, self.y = self.calculate_mask_position(check_point_mask)
         self.counter = 0
         self.touch_once = False
 
@@ -14,6 +13,9 @@ class CheckPoint():
         y = (min_y+max_y)/2
         print(f"x:{x}, y: {y}")
         return x, y
+    
+    def calculate_check_point_distance(self, car_x, car_y):
+        return math.sqrt((car_x - self.x)**2 + (car_y - self.y)**2)
 
     def check_point_check(self, player_car, check_point_mask):
         collision_point = player_car.collide(check_point_mask, 0, 0)

@@ -101,6 +101,7 @@ if __name__ == "__main__":
                 current_check_point = 0
                 
             check_point = CheckPoint(CHECK_POINTS[current_check_point], CHECK_POINTS_MASK[current_check_point])
+            print(f"distance: {CheckPoint.calculate_check_point_distance(player_car.x, player_car.y)}")
 
         if game_info.game_finished():
             blit_text_center(WIN, MAIN_FONT, "You won the game!")

@@ -4,7 +4,7 @@ from playerCar import PlayerCar
 from gameInfo import GameInfo
 from checkPoint import CheckPoint
 import time
-
+import sys
 
 
 class CarGame :
@@ -37,6 +37,8 @@ class CarGame :
         print(f"{self.WIDTH * 20} ,  {self.HEIGHT * 20}") 
         self.WIN = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Racing Game!")
+
+        self.min_distance = sys.maxsize
 
         self.FPS = 60
 
@@ -76,7 +78,9 @@ class CarGame :
 
     def play_game(self, FINAL_MOVE):
 
-        time.sleep(0.1)
+        reward = 0
+
+        # time.sleep(0.1)
         self.clock.tick(self.FPS)
 
         x_offset, y_offset = PlayerCar.calculate_offset(self.player_car, self.WIDTH, self.HEIGHT)
@@ -97,6 +101,17 @@ class CarGame :
                 self.current_check_point = 0
                 
             self.check_point = CheckPoint(self.CHECK_POINTS[self.current_check_point], self.CHECK_POINTS_MASK[self.current_check_point])
+            self.min_distance = sys.maxsize
+            print(f"distance: {self.check_point.calculate_check_point_distance(self.player_car.x, self.player_car.y)}")
+
+        temp_distance = self.check_point.calculate_check_point_distance(self.player_car.x, self.player_car.y)
+
+        if self.min_distance != sys.maxsize:
+            reward += self.min_distance - temp_distance
+        
+        print(f"temp distance: {temp_distance}, min: {self.min_distance}")
+        
+        self.min_distance = min(self.min_distance, temp_distance)
 
         reward = score
 
