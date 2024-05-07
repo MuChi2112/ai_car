@@ -7,7 +7,7 @@ from model import Linear_QNet, QTrainer
 from playerCar import PlayerCar
 
 
-MAX_MEMORY = 100_000
+MAX_MEMORY = 100000
 BATCH_SIZE = 1000
 LR = 0.001
 
@@ -18,13 +18,13 @@ class Agent:
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(9, 256, 4)
+        self.model = Linear_QNet(11, 256, 4)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
         
 
 
     def get_state(self, game):
-        return game.collision_point_list
+        return game.collision_point_list + game.relatively_pos
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done)) # popleft if MAX_MEMORY is reached
@@ -45,11 +45,15 @@ class Agent:
 
     def get_action(self, state):
         # random moves: tradeoff exploration / exploitation
-        self.epsilon = 80 - self.n_games
+        self.epsilon = 200 - self.n_games
         final_move = [0, 0, 0, 0]
         if random.randint(0, 200) < self.epsilon:
-            move = random.randint(0, 3)
-            final_move[move] = 1
+            move = random.randint(0, 15)
+            if move < 4:
+                final_move[move] = 1
+            else:
+                final_move[2] = 1
+            
         else:
             state0 = torch.tensor(state, dtype=torch.float)
             prediction = self.model(state0)

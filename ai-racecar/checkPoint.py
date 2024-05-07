@@ -16,6 +16,20 @@ class CheckPoint():
     
     def calculate_check_point_distance(self, car_x, car_y):
         return math.sqrt((car_x - self.x)**2 + (car_y - self.y)**2)
+    
+    def relativelyPoint(self, car_x, car_y):
+        temp_list = []
+        if (car_x - self.x) > 0:
+            temp_list.append(0)
+        else:
+            temp_list.append(1)
+
+        if (car_y - self.y) > 0:
+            temp_list.append(0)
+        else:
+            temp_list.append(1)
+        
+        return temp_list
 
     def check_point_check(self, player_car, check_point_mask):
         collision_point = player_car.collide(check_point_mask, 0, 0)

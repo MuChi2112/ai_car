@@ -55,6 +55,9 @@ class CarGame :
         self.check_point = CheckPoint(self.CHECK_POINTS[self.current_check_point], self.CHECK_POINTS_MASK[self.current_check_point])
 
         self.collision_point_list = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.relatively_pos = [0, 0]
+
+        self.timer = 0
         
 
 
@@ -80,6 +83,8 @@ class CarGame :
 
         reward = 0
 
+        self.timer += 1
+
         # time.sleep(0.1)
         self.clock.tick(self.FPS)
 
@@ -88,7 +93,8 @@ class CarGame :
         
         self.collision_point_list = self.player_car.circle_hit_check(x_offset, y_offset, self.TRACK_BORDER_MASK)
         # print(collision_point_list)
-        
+        self.relatively_pos = self.check_point.relativelyPoint(self.player_car.x, self.player_car.y)
+
         draw(self.WIN, self.images, self.player_car, self.game_info, x_offset, y_offset, self.MAIN_FONT, self.HEIGHT)
 
         self.move_player(self.player_car, FINAL_MOVE)
@@ -96,7 +102,7 @@ class CarGame :
 
         if(self.check_point.check_point_check(self.player_car, self.CHECK_POINTS_MASK[self.current_check_point])):
             self.current_check_point += 1
-            print(f"current_check_point: {self.current_check_point}")
+            
             if(self.current_check_point == 5):
                 self.current_check_point = 0
                 
@@ -109,14 +115,20 @@ class CarGame :
         if self.min_distance != sys.maxsize:
             reward += self.min_distance - temp_distance
         
-        print(f"temp distance: {temp_distance}, min: {self.min_distance}")
+            
         
         self.min_distance = min(self.min_distance, temp_distance)
 
-        reward = score
+        reward += score
+
+        if self.timer % 10000 == 0:
+            print("I am still alive")
+        # print(f"temp distance: {temp_distance}, min: {self.min_distance}")
+            # print(f"reward {reward}, score: {score}")
 
         return reward, done, score
     
     def reset(self):
         self.game_info.reset()
         self.player_car.reset()
+        self.min_distance = sys.maxsize
