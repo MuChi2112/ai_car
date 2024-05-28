@@ -15,7 +15,7 @@ class CarGame :
         self.TRACK = scale_image(pygame.image.load("imgs/track.png"), 1)
         self.TRACK_BORDER = scale_image(pygame.image.load("imgs/border.png"), 1)
         self.TRACK_BORDER_MASK = pygame.mask.from_surface(self.TRACK_BORDER)
-        self.FINISH = pygame.transform.rotate(scale_image(pygame.image.load("imgs/finish.png"), 3), 155)
+        self.FINISH = pygame.transform.rotate(scale_image(pygame.image.load("imgs/finish.png"), 3/25), 155)
 
         self.current_check_point = 0
 
@@ -26,11 +26,11 @@ class CarGame :
             self.CHECK_POINTS_MASK.append(pygame.mask.from_surface(self.CHECK_POINTS[i-1]))
 
         self.FINISH_MASK = pygame.mask.from_surface(self.FINISH)
-        self.FINISH_POSITION = (14600, 11345)
-        self.START_POS = (14561, 11548)
+        self.FINISH_POSITION = (14600/25, 11345/25)
+        self.START_POS = (583 - (19 * 0.4/25), 460 - (38 * 0.4/25))
 
-        self.RED_CAR = scale_image(pygame.image.load("imgs/car.png"), 0.4)
-        self.CIRCLE = scale_image(pygame.image.load("imgs/circle.png"), 200)
+        self.RED_CAR = scale_image(pygame.image.load("imgs/car.png"), 2/25)
+        self.CIRCLE = scale_image(pygame.image.load("imgs/circle.png"), 200/25)
 
         # self.WIDTH, self.HEIGHT = self.TRACK.get_width(), self.TRACK.get_height()
         self.WIDTH, self.HEIGHT = 1000, 925
@@ -48,7 +48,7 @@ class CarGame :
             
 
 
-        self.player_car = PlayerCar(100, 4, self.RED_CAR, self.START_POS)
+        self.player_car = PlayerCar(10, 4, self.RED_CAR, self.START_POS)
         
         self.game_info = GameInfo()
 
@@ -56,6 +56,8 @@ class CarGame :
 
         self.collision_point_list = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.relatively_pos = [0, 0]
+
+        
 
         self.timer = 0
         
@@ -80,6 +82,8 @@ class CarGame :
             player_car.reduce_speed()
 
     def play_game(self, FINAL_MOVE):
+
+        
 
         reward = 0
 
@@ -121,7 +125,7 @@ class CarGame :
 
         reward += score
 
-        if self.timer % 10000 == 0:
+        if self.timer % 100 == 0:
             print("I am still alive")
         # print(f"temp distance: {temp_distance}, min: {self.min_distance}")
             # print(f"reward {reward}, score: {score}")

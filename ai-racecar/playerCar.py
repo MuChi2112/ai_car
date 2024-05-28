@@ -7,7 +7,7 @@ class PlayerCar(AbstractCar):
         IMG = red_car
         super().__init__(max_vel, rotation_vel, IMG, start_pos)
 
-        second_values = [100, 150, 200, 250]
+        second_values = [10, 15, 20, 25]
 
         self.pair_list = []
         for first in range(-90, 91, 45):
@@ -35,10 +35,10 @@ class PlayerCar(AbstractCar):
 
         for i in self.pair_list:
             cir_x_rel , cir_y_rel = polar_to_cartesian(i[0] - self.angle -90 , i[1])
-            cir_x_true, cir_y_true = cir_x_rel + x_offset + self.x + 19 * 0.4, cir_y_rel + y_offset + self.y + 38 * 0.4
+            cir_x_true, cir_y_true = (cir_x_rel  + self.x + 19 * 0.4/25), (cir_y_rel  + self.y + 38 * 0.4/25)
             # pygame.draw.circle(screen, pygame.Color(255, 0, 0), (cir_x_true, cir_y_true), 5)
             
-            collision_point = mask.get_at((cir_x_true - x_offset, cir_y_true - y_offset))
+            collision_point = mask.get_at((self.x , self.y))
             collision_point_list.append(collision_point)
 
             

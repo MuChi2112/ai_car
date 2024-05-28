@@ -8,7 +8,16 @@ class CheckPoint():
         self.touch_once = False
 
     def calculate_mask_position(self, mask):
-        min_x, min_y, max_x, max_y = mask.get_bounding_rects()[0]
+        bounding_rects = mask.get_bounding_rects()
+        if bounding_rects:
+
+            min_x, min_y, max_x, max_y = bounding_rects[0]
+        else:
+            # 处理没有发现边界框的情况，例如可以设置为默认值或者跳过当前的处理步骤
+            min_x, min_y, max_x, max_y = 0, 0, 0, 0  # 例如，设置为默认值
+            print("nothing")
+            # 或者可以使用 continue 或 return 来跳过后续代码
+
         x = (min_x+max_x)/2
         y = (min_y+max_y)/2
         print(f"x:{x}, y: {y}")
