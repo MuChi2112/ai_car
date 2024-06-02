@@ -2,7 +2,7 @@ import pygame
 import time
 import math
 from checkPoint import CheckPoint, current_point
-
+from playerCar import PlayerCar
 def scale_image(img, factor):
     size = round(img.get_width() * factor), round(img.get_height() * factor)
     return pygame.transform.scale(img, size)
@@ -48,9 +48,17 @@ def draw(win, images, player_car, game_info, MAIN_FONT, WIDTH, HEIGHT, TRACK_BOR
 
     CheckPoint.draw_current_checkpoint(win)
 
-    collision_point_list = player_car.circle_hit_check(TRACK_BORDER_MASK, win)
+    # collision_point_list = player_car.circle_hit_check(TRACK_BORDER_MASK, win)
+
+    for d in range(-90, 120, 45):
+            
+
+    collision_point_list = player_car.check_radar(degree, TRACK_BORDER_MASK, player_car)
+
 
     player_car.draw(win)
+    PlayerCar.draw_radar(win)
+
     pygame.display.update()
 
     return collision_point_list
